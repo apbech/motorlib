@@ -97,7 +97,8 @@ class MainLoop {
       send_data.motor_position = fast_loop_status_.motor_position.position;
       send_data.joint_position = output_encoder_.get_value();//*2.0*(float) M_PI/param_.output_encoder.cpr;
       send_data.reserved[0] = iq_des; //fast_loop_status_.foc_status.measured.i_0;
-      communication_.send_data(send_data);
+      //communication_.send_data(send_data);
+      
       led_.update();
       last_receive_data_ = receive_data_;
     }

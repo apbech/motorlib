@@ -4,6 +4,8 @@
 #include "parameter_api.h"
 #include "param.h"
 #include <cstring>
+#include "../st_device.h"
+#include "util.h"
 
 extern uint32_t t_exec_fastloop;
 extern uint32_t t_exec_mainloop;
@@ -31,6 +33,20 @@ class System {
         api.add_api_variable("t_period_fastloop", new APIUint32(&t_period_fastloop));
         api.add_api_variable("t_period_mainloop", new APIUint32(&t_period_mainloop));
         while(1) {
+            uint16_t data[10] = {};
+            data[0] = I_A_DR;  
+            data[1] = I_B_DR;  
+            data[2] = I_C_DR;
+            data[3] = V_A_DR;
+            data[4] = V_B_DR;
+            data[5] = V_C_DR;
+            data[6] = MPS_I_A_DR;
+            data[7] = MPS_I_B_DR;
+            data[8] = MPS_I_C_DR;
+          //  if (!usb_.tx_active(0)) {
+                usb_.send_data(2, (const uint8_t *) data, 9*2, false);
+          //  }
+            ms_delay(10);
             char *s = System::get_string();
             if (s != NULL) {
                 System::send_string(api.parse_string(s).c_str());
