@@ -17,7 +17,7 @@ template<typename FastLoop>
 class MainLoop {
  public:
     MainLoop(FastLoop &fast_loop, PIDController &controller,  PIDController &torque_controller, PIDDeadbandController &impedance_controller, Communication &communication, LED &led, Sensor &output_encoder, TorqueSensor &torque, const MainLoopParam &param) : 
-        fast_loop_(fast_loop), controller_(controller), torque_controller_(torque_controller), impedance_controller_(impedance_controller), communication_(communication), led_(led), output_encoder_(output_encoder), torque_sensor_(torque) {
+        fast_loop_(fast_loop), controller_(controller), torque_controller_(torque_controller), impedance_controller_(impedance_controller), communication_(communication), led_(led), output_encoder_(output_encoder), torque_sensor_(torque), torque_filter_(1.0/10000) {
           set_param(param);
         }
     void init() {}
@@ -84,6 +84,7 @@ class MainLoop {
         case TORQUE:
           iq_des = torque_controller_.step(receive_data_.torque_desired, 0, torque_filtered) + \
                   receive_data_.current_desired;
+          //           position_desired += receive_data_.reserved*(torque_filtered - receive_data_.torque_desired);
           break;
         case IMPEDANCE:
         {
@@ -171,6 +172,7 @@ class MainLoop {
       torque_controller_.set_param(param.torque_controller_param);
       impedance_controller_.set_param(param.impedance_controller_param);
       torque_sensor_.set_param(param.torque_sensor);
+      torque_filter_.set_frequency(param.torque_sensor.filter_frequency_hz);
       param_ = param;
     }
     void set_rollover(float rollover) {
@@ -246,7 +248,8 @@ class MainLoop {
     MainControlMode mode_ = OPEN;
     Sensor &output_encoder_;
     TorqueSensor &torque_sensor_;
-    IIRFilter torque_filter_;
+    //IIRFilter torque_filter_;
+    FirstOrderLowPassFilter torque_filter_;
     float torque_ = 0;
     float dt_ = 0;
     TrajectoryGenerator position_trajectory_generator_;
