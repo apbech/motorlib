@@ -122,7 +122,7 @@ class System {
         return buf;
     }
 
-    static Communication communication_;
+    static SystemCommunication communication_;
     static Actuator actuator_;
     static std::queue<std::string> log_queue_;
     static ParameterAPI api;
