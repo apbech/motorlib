@@ -73,6 +73,14 @@ class MA732Encoder final : public SPIEncoder {
     uint32_t get_bct() {
         return read_register(0x2);
     }
+ 
+    void set_oz(uint32_t value) {
+        set_register(0x00, value);
+    }
+
+    uint32_t get_oz() {
+        return get_value();
+    }
 
     void set_et(uint32_t value) {
         set_register(0x3, value);
